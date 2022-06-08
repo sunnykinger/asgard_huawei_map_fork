@@ -462,34 +462,69 @@ class HuaweiMapMethodChannel {
       Map<String, dynamic> creationParams,
       Set<Factory<OneSequenceGestureRecognizer>>? gestureRecognizers,
       PlatformViewCreatedCallback onPlatformViewCreated) {
-    
-    return PlatformViewLink(surfaceFactory: (
+    return PlatformViewLink(
+      viewType: Channel.channel,
+      surfaceFactory: (
         BuildContext context,
         PlatformViewController controller,
-        ) {
-      return AndroidViewSurface(
-        controller: controller as AndroidViewController,
-        gestureRecognizers: gestureRecognizers ??
-            const <Factory<OneSequenceGestureRecognizer>>{},
-        hitTestBehavior: PlatformViewHitTestBehavior.opaque,
-      );
-    },onCreatePlatformView:(PlatformViewCreationParams params){
-      final AndroidViewController controller =PlatformViewsService.initExpensiveAndroidView(
-        id: params.id,
-        viewType: Channel.channel,
-        layoutDirection: TextDirection.ltr,
-        creationParams: creationParams,
-        creationParamsCodec: const StandardMessageCodec(),
-        onFocus: () => params.onFocusChanged(true),
-      );
-      controller.addOnPlatformViewCreatedListener(
-        params.onPlatformViewCreated,
-      );
-      controller.addOnPlatformViewCreatedListener(
-        onPlatformViewCreated,
-      );
-      return controller;
-    }, viewType:  Channel.channel);
+      ) {
+        return AndroidViewSurface(
+          controller: controller as AndroidViewController,
+          gestureRecognizers: gestureRecognizers ??
+              const <Factory<OneSequenceGestureRecognizer>>{},
+          hitTestBehavior: PlatformViewHitTestBehavior.opaque,
+        );
+      },
+      onCreatePlatformView: (PlatformViewCreationParams params) {
+        final SurfaceAndroidViewController controller =
+            PlatformViewsService.initSurfaceAndroidView(
+          id: params.id,
+          viewType: Channel.channel,
+          layoutDirection: TextDirection.ltr,
+          creationParams: creationParams,
+          creationParamsCodec: const StandardMessageCodec(),
+          onFocus: () => params.onFocusChanged(true),
+        );
+        controller.addOnPlatformViewCreatedListener(
+          params.onPlatformViewCreated,
+        );
+        controller.addOnPlatformViewCreatedListener(
+          onPlatformViewCreated,
+        );
+
+        controller.create();
+        return controller;
+      },
+    );
+
+    // return PlatformViewLink(surfaceFactory: (
+    //     BuildContext context,
+    //     PlatformViewController controller,
+    //     ) {
+    //   return AndroidViewSurface(
+    //     controller: controller as AndroidViewController,
+    //     gestureRecognizers: gestureRecognizers ??
+    //         const <Factory<OneSequenceGestureRecognizer>>{},
+    //     hitTestBehavior: PlatformViewHitTestBehavior.opaque,
+    //   );
+    // },onCreatePlatformView:(PlatformViewCreationParams params){
+    //   final AndroidViewController controller =PlatformViewsService.initExpensiveAndroidView(
+    //     id: params.id,
+    //     viewType: Channel.channel,
+    //     layoutDirection: TextDirection.ltr,
+    //     creationParams: creationParams,
+    //     creationParamsCodec: const StandardMessageCodec(),
+    //     onFocus: () => params.onFocusChanged(true),
+    //   );
+    //   controller.addOnPlatformViewCreatedListener(
+    //     params.onPlatformViewCreated,
+    //   );
+    //   controller.addOnPlatformViewCreatedListener(
+    //     onPlatformViewCreated,
+    //   );
+    //   return controller;
+    // }, viewType:  Channel.channel);
+
     // return AndroidView(
     //   viewType: Channel.channel,
     //   onPlatformViewCreated: onPlatformViewCreated,
